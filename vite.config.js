@@ -17,11 +17,11 @@ export default defineConfig({
     port: 1024,
     hmr: true,
     proxy: {
-      "api": {
-        target: "http://localhost:7090",
+      "/api/": {
+        target: "http://localhost:7090/",
         changeOrigin: true,
         pathRewrite: {
-          "^api":"/api"
+          "^/api/":"/api/"
         }
       }
     }
