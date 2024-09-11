@@ -67,7 +67,10 @@
                 type="password"
                 clearable 
                 placeholder="请输入密码" 
-                v-model="formData.registerPassword"></el-input>
+                v-model="formData.registerPassword"
+                show-password>
+                <template #prefix><span class="iconfont icon-password"></span></template>
+              </el-input>
               </el-form-item>
               <!-- 再次输入注册密码 -->
               <el-form-item prop="reRegisterPassword">
@@ -76,7 +79,10 @@
                 type="password"
                 clearable 
                 placeholder="请确认密码" 
-                v-model="formData.reRegisterPassword"></el-input>
+                v-model="formData.reRegisterPassword"
+                show-password>
+                <template #prefix><span class="iconfont icon-password"></span></template>
+              </el-input>
               </el-form-item>
            </div>
            
@@ -156,13 +162,19 @@
 
 <script setup>
 import {ref, reactive, getCurrentInstance, nextTick} from "vue"
+import { useRouter, useRoute } from "vue-router";
+import md5 from 'js-md5'
 
 const {proxy} = getCurrentInstance()
-
+const router = useRouter()
+const route = useRoute()
 //图形验证码
 const api = {
   checkCode: "/api/checkCode",
-  sendEmailCode: "/sendEmailCode"
+  sendEmailCode: "/sendEmailCode",
+  register: "/register",
+  resetPwd: "/resetPwd",
+  login: "/login",
 }
 
 const checkCodeUrl0 = ref(api.checkCode + "?type=0&time" + new Date().getTime())
@@ -179,6 +191,13 @@ const changeCheckCode = (type)=> {
 const optType = ref(1)
 const showPanel = (type) => {
   optType.value = type
+  for (let key in formData) {
+    if (key == "rememberMe") {
+      formData[key] = null
+    } else {
+      formData[key] = ""
+    }
+  }
 }
 
 const checkRePassword = (rule, value, callback)=> {
@@ -188,16 +207,19 @@ const checkRePassword = (rule, value, callback)=> {
     callback()
   }
 }
+
+const cookieLoginInfo = proxy.VueCookies.get("loginInfo")
 const formData = reactive({
-  email: "",
-  password: "",
+  email: cookieLoginInfo == null ? "": cookieLoginInfo.email,
+  password: cookieLoginInfo == null ? "": cookieLoginInfo.password,
   checkCode: "",
-  rememberMe: null,
+  rememberMe: cookieLoginInfo == null ? null : cookieLoginInfo.rememberMe,
   emailCode: "",
   nickName: "",
   registerPassword: "",
   reRegisterPassword: "",
 })
+
 const formDataRef = ref()
 const rules = { 
   email:[{required: true, message: "请输入正确的邮箱",}, {validator: proxy.Verify.email, message:"请输入正确的邮箱"}],
@@ -273,11 +295,73 @@ const sendEmailCode = () => {
 
 //登入、注册、重置密码 提交表单
 const doSubmit = ()=> {
-  formDataRef.value.validate((valid)=>{
+  formDataRef.value.validate(async (valid)=>{
     if (!valid) {
       return
     }
-    
+    console.log("dosubmit")
+    const params = {}
+    let url = ""
+    if (optType.value == 0) {//注册
+      params.email = formData.email
+      params.emailCode = formData.emailCode
+      params.nickName = formData.nickName
+      params.checkCode = formData.checkCode
+      params.password = formData.registerPassword
+      url = api.register
+      console.log("params", params)
+    } else if (optType.value == 2) {//找回密码
+      params.email = formData.email
+      params.emailCode = formData.emailCode
+      params.checkCode = formData.checkCode
+      params.password = formData.registerPassword
+      url = api.resetPwd
+    } else {//登入
+      params.email = formData.email
+      params.password = formData.password
+      params.checkCode = formData.checkCode
+      params.rememberMe = formData.rememberMe
+      let cookieLoginInfo = proxy.VueCookies.get("loginInfo")
+      let cookieLoginPassword = cookieLoginInfo == null ? null : cookieLoginInfo.password
+      if (params.password != cookieLoginPassword) {
+        params.password = md5(params.password)//md5加密
+      }
+      url = api.login
+    }
+    let result = await proxy.Request({
+      url: url,
+      params: params,
+       errorCallback: ()=> {
+        console.log("errorCallback trigger")
+        changeCheckCode(0)
+      }
+    })
+    if (!result) {
+      return
+    }
+    if (optType.value == 0) {//注册
+      proxy.Message.success("注册成功，请登入")
+      showPanel(1)
+    } else if (optType.value == 1) {//登入
+      if (params.rememberMe) {
+        const loginInfo = {
+          email: params.email,
+          password: params.password,
+          rememberMe: params.rememberMe,        
+        }
+        proxy.VueCookies.set("loginInfo", loginInfo, "7d")
+      } else {
+        proxy.VueCookies.remove("loginInfo")
+      }
+      proxy.VueCookies.set("userInfo", result.data, 0)
+      proxy.Message.success("登录成功")
+      //重定向到原始页面
+      const redirectUrl = route.query.redirectUrl || "/"
+      router.push(redirectUrl)
+    }else if (optType.value == 2) {//找回密码
+      proxy.Message.success("密码重置成功，请登入")
+      showPanel(1)
+    }
   })
 }
 </script>
