@@ -1,8 +1,5 @@
 <template>
-    <!-- :locale="locale"  -->
-    <el-config-provider :message="config">
         <RouterView></RouterView>
-    </el-config-provider>
 </template>
 
 <script setup>
