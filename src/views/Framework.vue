@@ -108,11 +108,15 @@
         :showUpdateAvatar="showUpdateAvatar" 
         @closeUpdateAvatar="closeUpdateAvatar" 
         @reloadAvatar="reloadAvatar"></UpdateAvatar>
+
+        <UpdatePassword 
+        :showUpdatePassword="showUpdatePassword"
+        @closeUpdatePassword="closeUpdatePassword">
+        </UpdatePassword>
     </div>
 </template>
 
 <script setup>
-import UpdateAvatar from '@/components/updateAvatar.vue';
 import { reactive, ref, watch, getCurrentInstance} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 
@@ -222,8 +226,9 @@ watch(()=> route, (newVal, oldVal)=> {
 }, {immediate: true, deep: true})
 
 
-const showUpdateAvatar = ref(false)
+
 //修改头像 
+const showUpdateAvatar = ref(false)
 const updateAvatar = ()=> {
   showUpdateAvatar.value = true
 }
@@ -234,10 +239,13 @@ const reloadAvatar = ()=> {
   timestamp.value = new Date().getTime()
 }
 //修改密码
+const showUpdatePassword = ref(false)
 const updatePassword = ()=> {
-
+  showUpdatePassword.value = true
 }
-
+const closeUpdatePassword = () => {
+  showUpdatePassword.value = false
+}
 //退出
 const logout = ()=> {
 
