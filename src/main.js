@@ -11,6 +11,8 @@ import '@/assets/base.scss'
 import VueCookies from 'vue-cookies'
 //引入自定义组件
 import Dialog from '@/components/Dialog.vue'
+import Avatar from '@/components/Avatar.vue'
+import updateAvatar from '@/components/updateAvatar.vue'
 
 import Verify from '@/utils/Verify.js'
 import Message from '@/utils/Message.js'
@@ -19,10 +21,18 @@ const app = createApp(App)//创建一个VM
 
 app.use(ElementPlus)
 app.use(router)
+//自定义组件
 app.component("Dialog", Dialog)
+app.component("Avatar", Avatar)
+app.component("updateAvatar", updateAvatar)
 
+//全局数据
 app.config.globalProperties.Verify = Verify
 app.config.globalProperties.Message = Message
 app.config.globalProperties.Request = Request
 app.config.globalProperties.VueCookies = VueCookies
+app.config.globalProperties.globalInfo = {
+    avatarUrl: "/api/getAvatar/",
+}
+
 app.mount('#app')

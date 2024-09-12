@@ -103,18 +103,23 @@
               </router-view>
             </div>
         </div>
+        <UpdateAvatar 
+        :userInfo="userInfo" 
+        :showUpdateAvatar="showUpdateAvatar" 
+        @closeUpdateAvatar="closeUpdateAvatar" 
+        @reloadAvatar="reloadAvatar"></UpdateAvatar>
     </div>
 </template>
 
 <script setup>
-import { reactive, ref, watch} from 'vue'
+import UpdateAvatar from '@/components/updateAvatar.vue';
+import { reactive, ref, watch, getCurrentInstance} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 
+const {proxy} = getCurrentInstance()
 
-const userInfo = {
-    nickName: "jingtao8a",
-    userId: "123",
-}
+const timestamp = ref(0)
+const userInfo = reactive(proxy.VueCookies.get("userInfo"))
 
 const menus = [
   {
@@ -215,6 +220,29 @@ watch(()=> route, (newVal, oldVal)=> {
         setMenu(newVal.meta.menuCode, newVal.path)
     }
 }, {immediate: true, deep: true})
+
+
+const showUpdateAvatar = ref(false)
+//修改头像 
+const updateAvatar = ()=> {
+  showUpdateAvatar.value = true
+}
+const closeUpdateAvatar = ()=>{
+  showUpdateAvatar.value = false
+}
+const reloadAvatar = ()=> {
+  timestamp.value = new Date().getTime()
+}
+//修改密码
+const updatePassword = ()=> {
+
+}
+
+//退出
+const logout = ()=> {
+
+}
+
 </script>
 
 <style lang="scss" scoped>
