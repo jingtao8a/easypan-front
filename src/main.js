@@ -14,12 +14,14 @@ import Dialog from '@/components/Dialog.vue'
 import Avatar from '@/components/Avatar.vue'
 import UpdateAvatar from '@/components/updateAvatar.vue'
 import UpdatePassword from '@/components/updatePassword.vue'
-
+import Table from '@/components/Table.vue'
+import Icon from '@/components/Icon.vue'
 
 import Verify from '@/utils/Verify.js'
 import Message from '@/utils/Message.js'
 import Request from '@/utils/Request.js'
 import Confirm from '@/utils/Confirm'
+import Utils from '@/utils/Utils'
 
 const app = createApp(App)//创建一个VM
 
@@ -30,6 +32,8 @@ app.component("Dialog", Dialog)
 app.component("Avatar", Avatar)
 app.component("UpdateAvatar", UpdateAvatar)
 app.component("UpdatePassword", UpdatePassword)
+app.component("Table", Table)
+app.component("Icon", Icon)
 
 //全局数据
 app.config.globalProperties.Verify = Verify
@@ -37,8 +41,10 @@ app.config.globalProperties.Message = Message
 app.config.globalProperties.Request = Request
 app.config.globalProperties.VueCookies = VueCookies
 app.config.globalProperties.Confirm = Confirm
+app.config.globalProperties.Utils = Utils
 app.config.globalProperties.globalInfo = {
     avatarUrl: "/api/getAvatar/",
+    imageUrl: "/api/file/getImage/",
 }
 
 app.mount('#app')
