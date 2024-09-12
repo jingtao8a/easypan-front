@@ -34,7 +34,7 @@ const router = createRouter({
             needLogin: true,
             menuCode: "main",
           },
-          componet: Main,
+          component: Main,
         },
         {
           path: "/myshare",
