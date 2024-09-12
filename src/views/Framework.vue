@@ -122,6 +122,10 @@ import {useRoute, useRouter} from 'vue-router'
 
 const {proxy} = getCurrentInstance()
 
+const api = {
+  logout: "logout"
+}
+
 const timestamp = ref(0)
 const userInfo = reactive(proxy.VueCookies.get("userInfo"))
 
@@ -248,7 +252,16 @@ const closeUpdatePassword = () => {
 }
 //退出
 const logout = ()=> {
-
+  proxy.Confirm(`你确定要退出登入吗？`, async ()=>{
+    let result = await proxy.Request({
+        url: api.logout,
+    })
+    if (result) {
+      proxy.Message.success("退出登录")
+      proxy.VueCookies.remove("userInfo")
+      router.push("/login")
+    }
+  })
 }
 
 </script>
