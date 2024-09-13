@@ -122,6 +122,7 @@
   //初始化
   const init = () => {
     if (props.initFetch && props.fetch) {
+      console.log("init fetch")
       props.fetch();
     }
   };

@@ -46,10 +46,7 @@ import PreviewDownload from "@/components/preview/PreviewDownload.vue";
 import PreviewMusic from "@/components/preview/PreviewMusic.vue";
 
 import { ref, reactive, getCurrentInstance, nextTick, computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
 const { proxy } = getCurrentInstance();
-const router = useRouter();
-const route = useRoute();
 
 const imageUrl = computed(() => {
   return (

@@ -211,9 +211,6 @@ const delBatch = (row) => {
   });
 };
 
-// onMounted = () => {
-//   loadDataList()
-// }
 </script>
 
 <style lang="scss" scoped>
