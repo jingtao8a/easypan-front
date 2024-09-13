@@ -126,7 +126,7 @@
 <script setup>
 import {ref, reactive, getCurrentInstance} from 'vue'
 const {proxy} = getCurrentInstance()
-
+const emit = defineEmits(["addFile"])
 const dataTableRef = ref()
 
 const columns = [
@@ -168,16 +168,18 @@ const fileNameFuzzy = ref()
 const category = ref("all")
 
 const currentFolder = ref({ fileId: 0 });
-//添加文件
-const addFile = () => {
 
+
+//添加文件
+const addFile = (fileData) => {
+    emit("addFile", {file: fileData.file, filePid: currentFolder.value.fileId})
 }
 
 
 //新建目录
 const newFolder = () => {
-    if (editing.value) {
-    return;
+    if (editing.value) {//处在编辑状态直接返回
+        return;
     }
     tableData.value.list.forEach((element) => {
         element.showEdit = false;
@@ -189,7 +191,7 @@ const newFolder = () => {
         fileId: "",
         filePid: currentFolder.value.fileId,
     });
-    editNameRef.value.focus();
+    // editNameRef.value.focus();
 }
 
 //批量删除文件
@@ -250,7 +252,6 @@ const rowSelected = (rows) => {
   rows.forEach((item) => {
     selectFileIdList.value.push(item.fileId)
   })
-  console.log(selectFileIdList.value)
 }
 
 // 预览文件
@@ -272,7 +273,7 @@ const saveNameEdit = async (index) => {
     let result = await proxy.Request({
         url: url,
         params: {
-        fileId,
+        fileId: fileId,
         filePid: filePid,
         fileName: fileNameReal,
         },
@@ -286,9 +287,9 @@ const saveNameEdit = async (index) => {
 //取消文件名编辑
 const cancelNameEdit = (index) => {
     const fileData = tableData.value.list[index];
-    if (fileData.fileId) {
+    if (fileData.fileId) {//取消编辑的是 已存在的文件
         fileData.showEdit = false;
-    } else {
+    } else {//取消编辑的是 新建的目录
         tableData.value.list.splice(index, 1);
     }
     editing.value = false;
@@ -310,8 +311,7 @@ const editing = ref(false);//表示是否在编辑状态
 const editNameRef = ref();//引用editPanel
 //编辑文件名
 const editFileName = (index)=> {
-    console.log(index)
-    if (tableData.value.list[0].fileId == "") {
+    if (tableData.value.list[0].fileId == "") {//点击了新建文件夹之后，又重新编辑其它文件名
         tableData.value.list.splice(0, 1);
         index = index - 1;
     }

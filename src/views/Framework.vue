@@ -19,11 +19,10 @@
                     <span class="iconfont icon-transfer"></span>
                   </template>
                   <template #default>
-                    <!-- <Uploader
+                    <Uploader
                       ref="uploaderRef"
                       @uploadCallback="uploadCallbackHandler"
-                    ></Uploader> -->
-                    <span>文件上传区</span>
+                    ></Uploader>
                   </template>
                 </el-popover>
                 <el-dropdown>
@@ -123,7 +122,23 @@ import {useRoute, useRouter} from 'vue-router'
 const {proxy} = getCurrentInstance()
 
 const api = {
-  logout: "logout"
+  logout: "/logout"
+}
+
+
+//添加文件
+const showUploader = ref(false)
+const uploaderRef = ref()
+const addFile = (data) => {
+  const {file, filePid} = data
+  console.log(file)
+  console.log(filePid)
+  showUploader.value = true
+  uploaderRef.value.addFile(file, filePid)
+}
+
+const uploadCallbackHandler = ()=> {
+  proxy.Message.success("上传文件成功")
 }
 
 const timestamp = ref(0)
