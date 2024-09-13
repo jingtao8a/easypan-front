@@ -72,22 +72,22 @@
                     <div class="space-info">
                         <div>空间使用</div>
                         <div class="percent">
-                            <!-- <el-progress
+                            <el-progress
                               :percentage="
                                 Math.floor(
                                   (useSpaceInfo.useSpace / useSpaceInfo.totalSpace) * 10000
                                 ) / 100
                               "
                               color="#409eff"
-                            /> -->
+                            />
                         </div>
-                        <!-- <div class="space-use">
+                        <div class="space-use">
                           <div class="use">
                             {{ proxy.Utils.size2Str(useSpaceInfo.useSpace) }}/
                             {{ proxy.Utils.size2Str(useSpaceInfo.totalSpace) }}
                           </div>
                           <div class="iconfont icon-refresh" @click="getUseSpace"></div>
-                        </div> -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -122,7 +122,8 @@ import {useRoute, useRouter} from 'vue-router'
 const {proxy} = getCurrentInstance()
 
 const api = {
-  logout: "/logout"
+  logout: "/logout",
+  getUseSpace: "/getUseSpace"
 }
 
 
@@ -131,14 +132,33 @@ const showUploader = ref(false)
 const uploaderRef = ref()
 const addFile = (data) => {
   const {file, filePid} = data
-  console.log(file)
-  console.log(filePid)
+  // console.log(file)
+  // console.log(filePid)
   showUploader.value = true
   uploaderRef.value.addFile(file, filePid)
 }
 
+// 用户空间
+const useSpaceInfo = ref({useSpace: 0, totalSpace: 0})
+const getUseSpace = async () => {
+  let result = await proxy.Request({
+    url: api.getUseSpace,
+    showLoading: false,
+  })
+  if (!result) {
+    return
+  }
+  // console.log(result.data)
+  useSpaceInfo.value = result.data
+}
+getUseSpace()
+
+const routerViewRef = ref()
 const uploadCallbackHandler = ()=> {
   proxy.Message.success("上传文件成功")
+  routerViewRef.value.reload()
+  //更新用户空间
+  getUseSpace()
 }
 
 const timestamp = ref(0)
@@ -219,7 +239,7 @@ const menus = [
   },
 ]
 
-const currentMenu = ref(menus[0])
+const currentMenu = ref()
 const currentPath = ref()
 const route = useRoute()
 const router = useRouter()
@@ -235,7 +255,7 @@ const setMenu = (menuCode, path) => {
     const menu = menus.find(item=> {return item.menuCode === menuCode})
     currentMenu.value = menu
     currentPath.value = path
-    console.log("currentPath", currentPath.value)
+    // console.log("currentPath", currentPath.value)
 }
 
 watch(()=> route, (newVal, oldVal)=> {

@@ -24,18 +24,11 @@ const props = defineProps(
         },
     }
 )
+
+const errorHandler = () => {
+    Proxy.Message.error("获取用户头像失败")
+}
 </script>
 
 <style lang="scss" scoped>
-// .avatar {
-//     display: flex;
-//     width: 40px;
-//     height: 40px;
-//     border-radius: 50%;
-//     overflow: hidden;
-//     img {
-//         width: 10%;
-//         object-fit: cover;
-//     }
-// }
 </style>
