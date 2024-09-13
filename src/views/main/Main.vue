@@ -120,9 +120,12 @@
                 </div>
             </div>
         </div>
+        <!-- 选择移动目录 -->
         <FolderSelect ref="folderSelectRef" @moveFolderDone="moveFolderDone"></FolderSelect>
         <!--预览-->
         <Preview ref="previewRef"> </Preview>
+        <!-- 分享表单 -->
+        <ShareFile ref="shareFileRef"></ShareFile>
     </div>
 </template>
 
@@ -392,9 +395,11 @@ const cancelNameEdit = (index) => {
     }
     editing.value = false;
 }
-//分享文件
-const share = () => {
 
+const shareFileRef = ref()
+//分享文件
+const share = (row) => {
+    shareFileRef.value.show(row)
 }
 //下载文件
 const download = async (row) => {

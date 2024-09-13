@@ -21,6 +21,8 @@ import FolderSelect from '@/components/FolderSelect.vue'
 import Navigation from '@/components/Navigation.vue'
 import Preview from '@/components/preview/Preview.vue'
 import Window from '@/components/Window.vue'
+import ShareFile from '@/components/ShareFile.vue'
+
 
 import Verify from '@/utils/Verify.js'
 import Message from '@/utils/Message.js'
@@ -44,6 +46,7 @@ app.component('FolderSelect', FolderSelect)
 app.component('Navigation', Navigation)
 app.component('Preview', Preview)
 app.component('Window', Window)
+app.component('ShareFile', ShareFile)
 
 //全局数据
 app.config.globalProperties.Verify = Verify
