@@ -28,7 +28,7 @@
                     批量移动
                 </el-button>
                 <div class="search-panel" >
-                    <el-input clearable v-model="fileNameFuzzy" placeholder="输入文件名搜索">
+                    <el-input clearable v-model="fileNameFuzzy" placeholder="输入文件名搜索" @keyup.enter="search">
                         <template #suffix>
                             <i class="iconfont icon-search" @click="search"></i>
                         </template>
@@ -125,8 +125,9 @@
 </template>
 
 <script setup>
-import {ref, reactive, getCurrentInstance, watch, onMounted} from 'vue'
+import {ref, reactive, getCurrentInstance, watch, onMounted, computed} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
+import CategoryInfo from '@/js/CategoryInfo';
 const {proxy} = getCurrentInstance()
 const route = useRoute()
 const router = useRouter()
@@ -222,6 +223,18 @@ const addFile = (fileData) => {
     emit("addFile", {file: fileData.file, filePid: currentFolder.value.fileId})
 }
 
+const fileAccept = computed(() => {
+  const categoryItem = CategoryInfo[category.value];
+  return categoryItem ? categoryItem.accept : "*";
+});
+
+//添加文件回调
+const reload = () => {
+  loadDataList();
+};
+defineExpose({
+  reload,
+});
 //新建目录
 const newFolder = () => {
     if (editing.value) {//处在编辑状态直接返回
