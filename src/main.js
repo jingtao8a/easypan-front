@@ -19,6 +19,8 @@ import Icon from '@/components/Icon.vue'
 import Uploader from '@/components/Uploader.vue'
 import FolderSelect from '@/components/FolderSelect.vue'
 import Navigation from '@/components/Navigation.vue'
+import Preview from '@/components/preview/Preview.vue'
+import Window from '@/components/Window.vue'
 
 import Verify from '@/utils/Verify.js'
 import Message from '@/utils/Message.js'
@@ -40,6 +42,8 @@ app.component("Icon", Icon)
 app.component("Uploader", Uploader)
 app.component('FolderSelect', FolderSelect)
 app.component('Navigation', Navigation)
+app.component('Preview', Preview)
+app.component('Window', Window)
 
 //全局数据
 app.config.globalProperties.Verify = Verify

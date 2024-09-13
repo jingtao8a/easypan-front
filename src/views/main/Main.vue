@@ -121,6 +121,8 @@
             </div>
         </div>
         <FolderSelect ref="folderSelectRef" @moveFolderDone="moveFolderDone"></FolderSelect>
+        <!--预览-->
+        <Preview ref="previewRef"> </Preview>
     </div>
 </template>
 
@@ -340,12 +342,19 @@ const rowSelected = (rows) => {
   })
 }
 
+const previewRef = ref()
+
 // 预览文件
 const preview = (row)=>{
     if (row.folderType == 1) {//如果是目录，选择打开
         navigationRef.value.openFolder(row);
         return;
     }
+    if (row.status != 2) {//转码未成功，无法预览
+        proxy.Message.warning("转码未成功，无法预览")
+        return
+    }
+    previewRef.value.showPreview(row , 0)
 }
 
 //保存文件名编辑
@@ -388,8 +397,14 @@ const share = () => {
 
 }
 //下载文件
-const download = () => {
-
+const download = async (row) => {
+    let result = await proxy.Request({
+        url: api.createDownloadUrl + "/" + row.fileId,
+    });
+    if (!result) {
+        return;
+    }
+    window.location.href = api.download + "/" + result.data;
 }
 //删除文件
 const delFile = (row) => {
