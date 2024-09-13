@@ -196,6 +196,22 @@ const newFolder = () => {
 
 //批量删除文件
 const delFileBatch = () => {
+    if (selectFileIdList.value.length == 0) {//没有文件Id列表为空
+        return
+    }
+    proxy.Confirm("你确定要删除这些文件吗？删除的文件可在10天内通过回收站还原", async () => {
+        let result = await proxy.Request({
+            url: api.delFile,
+            params: {
+                fileIds: selectFileIdList.value.join(',')
+            }
+        })
+        if (!result) {
+            return
+        }
+        proxy.Message.success("删除文件成功")
+        loadDataList()
+    })
 
 }
 
