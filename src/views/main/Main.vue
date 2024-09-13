@@ -422,7 +422,7 @@ const editFileName = (index)=> {
 
 //移动文件
 const folderSelectRef = ref()
-const currentMoveFile = ref({})//当前选择移动的文件
+const currentMoveFile = ref()//当前选择移动的文件
 const moveFolder = (row) => {
     currentMoveFile.value = row
     let excludeFileIdList = [currentFolder.value.fileId]
@@ -434,12 +434,12 @@ const moveFolder = (row) => {
 
 //移动文件完成
 const moveFolderDone = async (folderId) =>{
-    if (currentMoveFile.value.filePid === folderId || currentFolder.value.fileId == folderId) {
+    if (currentMoveFile.value && (currentMoveFile.value.filePid === folderId || currentFolder.value.fileId == folderId)) {
         proxy.Message.warning("文件正在当前目录，无需移动");
         return;
     }
     let filedIdsArray = [];
-    if (currentMoveFile.value.fileId) {
+    if (currentMoveFile.value && currentMoveFile.value.fileId) {
         filedIdsArray.push(currentMoveFile.value.fileId);
     } else {
         filedIdsArray = filedIdsArray.concat(selectFileIdList.value);
