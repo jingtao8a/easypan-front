@@ -319,8 +319,20 @@ const download = () => {
 
 }
 //删除文件
-const delFile = () => {
-
+const delFile = (row) => {
+    proxy.Confirm(`你确定要删除${row.fileName}吗？删除的文件可在10天内通过回收站还原`, async () => {
+        let result = await proxy.Request({
+            url: api.delFile,
+            params: {
+                fileIds: row.fileId,
+            }
+        })
+        if (!result) {
+            return
+        }
+        proxy.Message.success("删除文件成功")
+        loadDataList()
+    })
 }
 //编辑行
 const editing = ref(false);//表示是否在编辑状态
