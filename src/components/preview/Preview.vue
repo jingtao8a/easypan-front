@@ -103,14 +103,14 @@ const showPreview = (data, showPart) => {
     }
     let _createDownloadUrl = FILE_URL_MAP[showPart].createDownloadUrl;
     let _downloadUrl = FILE_URL_MAP[showPart].downloadUrl;
-    if (showPart == 0) {
+    if (showPart == 0) {//首页预览
       _url = _url + "/" + data.fileId;
       _createDownloadUrl = _createDownloadUrl + "/" + data.fileId;
-    } else if (showPart == 1) {
-      _url = _url + "/" + data.userId + "/" + data.fileId;
-      _createDownloadUrl =
-        _createDownloadUrl + "/" + data.userId + "/" + data.fileId;
-    } else if (showPart == 2) {
+    // } else if (showPart == 1) {
+    //   _url = _url + "/" + data.userId + "/" + data.fileId;
+    //   _createDownloadUrl =
+    //     _createDownloadUrl + "/" + data.userId + "/" + data.fileId;
+    } else if (showPart == 2) {//外部分享页预览
       _url = _url + "/" + data.shareId + "/" + data.fileId;
       _createDownloadUrl =
         _createDownloadUrl + "/" + data.shareId + "/" + data.fileId;
