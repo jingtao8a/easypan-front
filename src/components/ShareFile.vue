@@ -115,18 +115,25 @@
       if (!result) {
         return;
       }
-      showType.value = 1;
-      resultInfo.value = result.data;
-      dialogConfig.value.buttons[0].text = "关闭";
-      showCancel.value = false;
+      showShareUrlAndShareCode(result)
     });
   };
   
+
+const showShareUrlAndShareCode = (result)=> {
+    showType.value = 1;
+    resultInfo.value = result.data;
+    dialogConfig.value.buttons[0].text = "关闭";
+    showCancel.value = false;
+}
+
   const show = (data) => {
-    showCancel.value = true;
-    dialogConfig.value.show = true;
     showType.value = 0;
     resultInfo.value = {};
+    dialogConfig.value.buttons[0].text = "确认";
+    showCancel.value = true;
+
+    dialogConfig.value.show = true;
     nextTick(() => {
       formDataRef.value.resetFields();
       formData.value = Object.assign({}, data);
