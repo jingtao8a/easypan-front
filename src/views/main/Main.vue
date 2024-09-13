@@ -37,7 +37,7 @@
                 <div class="iconfont icon-refresh" @click="loadDataList"></div>
             </div>
             <!-- 导航 -->
-             <div>全部文件</div>
+            <Navigation ref="navigationRef" @navChange="navChange"></Navigation>
         </div>
         <div class="file-list" v-if="tableData.list && tableData.list.length > 0">
             <Table 
@@ -120,13 +120,17 @@
                 </div>
             </div>
         </div>
+        <FolderSelect ref="folderSelectRef" @moveFolderDone="moveFolderDone"></FolderSelect>
     </div>
 </template>
 
 <script setup>
-import {ref, reactive, getCurrentInstance} from 'vue'
+import {ref, reactive, getCurrentInstance, watch, onMounted} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
 const {proxy} = getCurrentInstance()
-const emit = defineEmits(["addFile"])
+const route = useRoute()
+const router = useRouter()
+
 const dataTableRef = ref()
 
 const columns = [
@@ -165,16 +169,58 @@ const tableOptions = reactive({
     selectType: "checkbox",
 })
 const fileNameFuzzy = ref()
-const category = ref("all")
+const category = ref()//当前展示的类别
 
-const currentFolder = ref({ fileId: 0 });
+const currentFolder = ref({ fileId: 0 });//当前父目录
+const navChange = (newCurrentFolder) => {
+    console.log("navChange")
+    currentFolder.value = newCurrentFolder
+    loadDataList()
+}
+const navigationRef = ref()
 
+//改变Category的一系列方法
+let alreadyMounted = false
 
+onMounted(() => {
+    alreadyMounted = true
+    category.value = getCategory(route.path)
+    if (category.value == null) {
+        category.value = "all"
+    }
+    loadDataList()
+})
+
+const getCategory = (path) => {
+    if (path.indexOf('main') != -1) {
+        let newCategory = path.slice(6)
+        if (newCategory.indexOf('?') != -1) {
+            newCategory = newCategory.slice(0, category.indexOf('?'))
+        }
+        return newCategory
+    }
+    return null
+}
+
+const changeCategory = (path) => {
+    category.value = getCategory(path)
+    if (category.value == null) {
+        category.value = "all"
+    }
+    loadDataList()
+}
+
+watch(()=> route, (newVal, oldVal)=> {
+    if (newVal.meta.menuCode && alreadyMounted) {
+        changeCategory(newVal.path)
+    }
+}, {immediate: true, deep: true})
+
+const emit = defineEmits(["addFile"])
 //添加文件
 const addFile = (fileData) => {
     emit("addFile", {file: fileData.file, filePid: currentFolder.value.fileId})
 }
-
 
 //新建目录
 const newFolder = () => {
@@ -217,7 +263,14 @@ const delFileBatch = () => {
 
 //批量移动文件
 const moveFolderBatch = () => {
-
+    currentMoveFile.value = null
+    let excludeFileIdList = [currentFolder.value.fileId]
+    for (let fileItem of selectFileList.value) {
+        if (fileItem.folderType == "1") {
+            excludeFileIdList.push(fileItem.fileId)
+        }
+    }
+    folderSelectRef.value.showFolderDialog(excludeFileIdList.join(','))
 }
 
 //输入文件名搜索
@@ -230,7 +283,7 @@ const loadDataList = async ()=> {
         pageNo: tableData.value.pageNo,
         pageSize: tableData.value.pageSize,
         fileNameFuzzy: fileNameFuzzy.value,
-        filePid: 0,
+        filePid: currentFolder.value.fileId,
         category: category.value,
     }
     if (params.category !== 'all') {
@@ -239,6 +292,7 @@ const loadDataList = async ()=> {
     let result = await proxy.Request({
         url: api.loadDataList,
         params: params,
+        showLoading: false,
     })
     
     if (!result) {
@@ -271,8 +325,11 @@ const rowSelected = (rows) => {
 }
 
 // 预览文件
-const preview = ()=>{
-
+const preview = (row)=>{
+    if (row.folderType == 1) {//如果是目录，选择打开
+        navigationRef.value.openFolder(row);
+        return;
+    }
 }
 
 //保存文件名编辑
@@ -334,9 +391,11 @@ const delFile = (row) => {
         loadDataList()
     })
 }
+
 //编辑行
 const editing = ref(false);//表示是否在编辑状态
 const editNameRef = ref();//引用editPanel
+
 //编辑文件名
 const editFileName = (index)=> {
     if (tableData.value.list[0].fileId == "") {//点击了新建文件夹之后，又重新编辑其它文件名
@@ -360,9 +419,43 @@ const editFileName = (index)=> {
     editing.value = true;
     // editNameRef.value.focus();
 }
-//移动文件
-const moveFolder = () => {
 
+//移动文件
+const folderSelectRef = ref()
+const currentMoveFile = ref({})//当前选择移动的文件
+const moveFolder = (row) => {
+    currentMoveFile.value = row
+    let excludeFileIdList = [currentFolder.value.fileId]
+    if (row.folderType == "1") {//row本身为目录
+        excludeFileIdList.push(row.fileId)
+    }
+    folderSelectRef.value.showFolderDialog(excludeFileIdList.join(','))
+}
+
+//移动文件完成
+const moveFolderDone = async (folderId) =>{
+    if (currentMoveFile.value.filePid === folderId || currentFolder.value.fileId == folderId) {
+        proxy.Message.warning("文件正在当前目录，无需移动");
+        return;
+    }
+    let filedIdsArray = [];
+    if (currentMoveFile.value.fileId) {
+        filedIdsArray.push(currentMoveFile.value.fileId);
+    } else {
+        filedIdsArray = filedIdsArray.concat(selectFileIdList.value);
+    }
+    let result = await proxy.Request({
+        url: api.changeFileFolder,
+        params: {
+        fileIds: filedIdsArray.join(","),
+        filePid: folderId,
+        },
+    });
+    if (!result) {
+        return;
+    }
+    folderSelectRef.value.close();
+    loadDataList()
 }
 </script>
 
