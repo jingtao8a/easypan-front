@@ -125,7 +125,7 @@
 </template>
 
 <script setup>
-import {ref, reactive, getCurrentInstance, watch, onMounted, computed} from 'vue'
+import {ref, reactive, getCurrentInstance, watch, onMounted, computed, nextTick} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import CategoryInfo from '@/js/CategoryInfo';
 const {proxy} = getCurrentInstance()
@@ -174,7 +174,7 @@ const category = ref()//当前展示的类别
 
 const currentFolder = ref({ fileId: 0 });//当前父目录
 const navChange = (newCurrentFolder) => {
-    console.log("navChange")
+    // console.log("navChange")
     currentFolder.value = newCurrentFolder
     loadDataList()
 }
@@ -250,7 +250,10 @@ const newFolder = () => {
         fileId: "",
         filePid: currentFolder.value.fileId,
     });
-    // editNameRef.value.focus();
+
+    nextTick(()=>{
+        editNameRef.value.focus();
+    })
 }
 
 //批量删除文件
@@ -430,7 +433,9 @@ const editFileName = (index)=> {
         cureentData.fileSuffix = "";
     }
     editing.value = true;
-    // editNameRef.value.focus();
+    nextTick(()=>{
+        editNameRef.value.focus();
+    })
 }
 
 //移动文件

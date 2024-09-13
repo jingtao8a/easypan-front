@@ -47,7 +47,7 @@ const currentFolder = ref();
 const init = () => {
   folderList.value = [];
   currentFolder.value = { fileId: "0" };
-  console.log("navigation init")
+  // console.log("navigation init")
   navChange();
 };
 
