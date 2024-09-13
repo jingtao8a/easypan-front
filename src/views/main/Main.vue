@@ -203,11 +203,11 @@ const getCategory = (path) => {
 }
 
 const changeCategory = (path) => {
-    category.value = getCategory(path)
-    if (category.value == null) {
-        category.value = "all"
+    let newCategory = getCategory(path)
+    if (newCategory != null && category.value != newCategory) {
+        category.value = newCategory
+        loadDataList()
     }
-    loadDataList()
 }
 
 watch(()=> route, (newVal, oldVal)=> {
