@@ -3,8 +3,10 @@ import Login from '@/views/Login.vue'
 import Test from '@/views/Test.vue'
 import Framework from '@/views/Framework.vue'
 import Main from '@/views/main/Main.vue'
-import Share from '@/views/share/Share.vue'
+import MyShare from '@/views/share/MyShare.vue'
 import Recycle from '@/views/recycle/Recycle.vue'
+import Share from '@/views/webshare/Share.vue'
+import ShareCheck from '@/views/webshare/ShareCheck.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,7 +45,7 @@ const router = createRouter({
             needLogin: true,
             menuCode: "share"
           },
-          component: Share,
+          component: MyShare,
         },
         {
           path: "/recycle",
@@ -56,6 +58,16 @@ const router = createRouter({
         },
       ] 
     },
+    {
+      path:"/share/:shareId",
+      name:"外部分享",
+      component: Share,
+    },
+    {
+      path:"/shareCheck/:shareId",
+      name:"外部分享校验",
+      component: ShareCheck,
+    }
   ]
 })
 
