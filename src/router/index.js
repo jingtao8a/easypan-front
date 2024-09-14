@@ -1,4 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
+//引入cookies
+import VueCookies from 'vue-cookies'
+
 import Login from '@/views/Login.vue'
 import Test from '@/views/Test.vue'
 import Framework from '@/views/Framework.vue'
@@ -69,6 +72,14 @@ const router = createRouter({
       component: ShareCheck,
     }
   ]
+})
+
+router.beforeEach((to, from, next)=> {//用于在删除cookies中的userInfo后，刷新后自动跳转到登入状态
+  const userInfo = VueCookies.get("userInfo")
+  if (to.meta.needLogin != null && to.meta.needLogin && userInfo == null) {
+    router.push("/login");
+  }
+  next()
 })
 
 export default router
